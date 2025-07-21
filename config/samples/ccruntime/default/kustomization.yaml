@@ -18,9 +18,6 @@ patches:
     - op: replace
       path: /spec/config/runtimeClasses
       value:
-      - name: "kata-clh"
-        snapshotter: ""
-        pulltype: ""
       - name: "kata-qemu"
         snapshotter: ""
         pulltype: ""
@@ -30,12 +27,18 @@ patches:
       - name: "kata-qemu-tdx"
         snapshotter: "nydus"
         pulltype: "guest-pull"
-      - name: "kata-qemu-snp"
-        snapshotter: "nydus"
-        pulltype: "guest-pull"
-    - op: add
-      path: /spec/config/defaultRuntimeClassName
-      value: "kata-qemu"
+    - op: replace
+      path: /spec/config/preInstall/image
+      value: "docker.io/cbarbieru/reqs-payload:x86_64-4dd3805eb2ff8a92ce9cd4eee1c3adb40cbb445c"
+    - op: replace
+      path: /spec/config/preInstall/volumes/2/hostPath/path
+      value: "/var/snap/microk8s/current/args/"
+    - op: replace
+      path: /spec/config/postUninstall/volumes/2/hostPath/path
+      value: "/var/snap/microk8s/current/args/"
+    - op: replace
+      path: /spec/config/installerVolumes/1/hostPath/path
+      value: "/var/snap/microk8s/current/args/"
     - op: add
       path: /spec/config/debug
       value: false

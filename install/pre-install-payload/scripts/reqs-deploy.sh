@@ -31,11 +31,18 @@ function host_systemctl() {
 function get_container_engine() {
 	local container_engine
 	container_engine=$(kubectl get node "$NODE_NAME" -o jsonpath='{.status.nodeInfo.containerRuntimeVersion}' | awk -F '[:]' '{print $1}')
+	
+	local microk8s_label=$(kubectl get node "$NODE_NAME" -o jsonpath='{.metadata.labels.microk8s\.io\/cluster}')
+
 	if [[ "${container_engine}" != "containerd" && "${container_engine}" != "cri-o" ]]; then
 		die "${container_engine} is not yet supported"
 	fi
 
-	echo "$container_engine"
+	if [ "$microk8s_label" == "true" ]; then
+        echo "microk8s"
+    else
+        echo "$container_engine"
+    fi
 }
 
 function set_container_engine() {
@@ -165,11 +172,19 @@ function uninstall_artifacts() {
 function restart_systemd_service() {
 	host_systemctl daemon-reload
 	echo "Restarting ${container_engine}"
-	host_systemctl restart "${container_engine}"
+	if [ "${container_engine}" == "microk8s" ]; then
+        echo "Detected MicroK8s, restarting snap.microk8s.daemon-containerd.service"
+        host_systemctl restart snap.microk8s.daemon-containerd.service
+    else
+        # Fallback for other container engines (containerd, cri-o)
+        host_systemctl restart "${container_engine}"
+    fi
 }
 
 function configure_nydus_snapshotter_for_containerd() {
 	echo "configure nydus snapshotter for containerd"
+
+	local containerd_config="/var/snap/microk8s/current/args/containerd-template.toml"
 
 	local containerd_imports_path="/etc/containerd/config.toml.d"
 	local tmp_containerd_config="$(mktemp)"
@@ -227,6 +242,8 @@ EOF
 
 function remove_nydus_snapshotter_from_containerd() {
 	echo "Remove nydus snapshotter from containerd"
+
+	local containerd_config="/var/snap/microk8s/current/args/containerd-template.toml"
 
 	local tmp_containerd_config="$(mktemp)"
 	local containerd_imports_path="/etc/containerd/config.toml.d"
