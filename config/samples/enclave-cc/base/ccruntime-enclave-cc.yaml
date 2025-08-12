@@ -25,7 +25,7 @@ spec:
         name: local-bin
     installerVolumes:
       - hostPath:
-          path: /etc/containerd/
+          path: /var/lib/rancher/k3s/agent/etc/containerd/
           type: ""
         name: containerd-conf
       - hostPath:
@@ -66,7 +66,7 @@ spec:
             type: DirectoryOrCreate
           name: confidential-containers-artifacts
         - hostPath:
-            path: /etc/containerd/
+            path: /var/lib/rancher/k3s/agent/etc/containerd/
             type: ""
           name: containerd-conf
         - hostPath:
@@ -123,7 +123,7 @@ spec:
             type: ""
           name: etc-systemd-system
         - hostPath:
-            path: /etc/containerd/
+            path: /var/lib/rancher/k3s/agent/etc/containerd/
             type: ""
           name: containerd-conf
         - hostPath:

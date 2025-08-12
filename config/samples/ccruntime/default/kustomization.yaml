@@ -24,13 +24,13 @@ patches:
         snapshotter: ""
         pulltype: ""
       - name: "kata-qemu-coco-dev"
-        snapshotter: "nydus"
+        snapshotter: "devmapper"
         pulltype: "guest-pull"
       - name: "kata-qemu-tdx"
-        snapshotter: "nydus"
+        snapshotter: "devmapper"
         pulltype: "guest-pull"
       - name: "kata-qemu-snp"
-        snapshotter: "nydus"
+        snapshotter: "devmapper"
         pulltype: "guest-pull"
     - op: add
       path: /spec/config/defaultRuntimeClassName
